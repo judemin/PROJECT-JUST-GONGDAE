@@ -19,19 +19,19 @@ import java.util.Random;
 public class CrossrefRepositoryImpl implements CrossrefRepository {
     private final RestTemplate restTemplate;
     private final String[] crossrefQueries = {
-            "https://api.crossref.org/works?query=Computer%20Science&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Artificial%20Intelligence&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Computational%20Theory%20and%20Mathematics&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Computer%20Graphics%20and%20Computer-Aided%20Design&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Computer%20Networks%20and%20Communications&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Computer%20Science%20Applications&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Computer%20Vision%20and%20Pattern%20Recognition&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Hardware%20and%20Architecture&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Human-Computer%20Interaction&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Information%20Systems&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Signal%20Processing&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Software&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1",
-            "https://api.crossref.org/works?query=Computer%20Science%20miscellaneous&filter=type:journal-article,from-pub-date:2020,has-abstract:true,has-full-text:true&sample=1"
+            "https://api.crossref.org/works?query=Computer%20Science&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Artificial%20Intelligence&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Computational%20Theory%20and%20Mathematics&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Computer%20Graphics%20and%20Computer-Aided%20Design&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Computer%20Networks%20and%20Communications&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Computer%20Science%20Applications&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Computer%20Vision%20and%20Pattern%20Recognition&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Hardware%20and%20Architecture&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Human-Computer%20Interaction&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Information%20Systems&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Signal%20Processing&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Software&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1",
+            "https://api.crossref.org/works?query=Computer%20Science%20miscellaneous&filter=type:journal-article,from-pub-date:2020,has-abstract:true&sample=1"
     };
 
     public CrossrefRepositoryImpl(RestTemplateBuilder restTemplateBuilder) {
@@ -73,6 +73,14 @@ public class CrossrefRepositoryImpl implements CrossrefRepository {
                     // 초록 가져오기
                     if (paperNode.has("abstract")) {
                         String abstractText = paperNode.path("abstract").asText();
+
+                        // 만약 500자보다 적은 요약본이 있다면
+                        // 재귀함수를 호출해 새로운 데이터 fetch
+                        if(abstractText.length() < 500) {
+                            log.error("[CrossrefRepositoryImpl]-[fetchRandomPaper] abstractText len is under 500!");
+                            return fetchRandomPaper();
+                        }
+
                         // HTML 태그 제거
                         abstractText = abstractText.replaceAll("<[^>]*>", "");
                         paper.setAbstractText(abstractText);
