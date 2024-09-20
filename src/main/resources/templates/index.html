@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>랜덤 논문 정보</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .doi {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .authors {
+            font-size: 16px;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+
+        .abstract {
+            line-height: 1.6;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            line-height: 1.6;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        button {
+            background-color: #2980b9;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1f618d;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>CrossRef Random Journal Article</h1>
+
+    <div th:if="${paper != null}">
+        <h2 th:text="${paper.title}">CrossRef Random Journal Article</h2>
+        <p class="doi"><strong>DOI:</strong> <span th:text="${paper.DOI}">DOI 정보</span></p>
+
+        <div class="authors">
+            <p><strong>저자:</strong>
+                <span th:if="${paper.authors != null}">
+                        <span th:each="author, stat : ${paper.authors}">
+                            <span th:text="${author}"></span><span th:if="${!stat.last}">, </span>
+                        </span>
+                    </span>
+            </p>
+        </div>
+
+        <div class="abstract">
+            <p><strong>초록:</strong></p>
+            <p th:text="${paper.abstractText}">초록 내용</p>
+        </div>
+    </div>
+
+    <div th:if="${paper == null}">
+        <p>논문 데이터를 가져오지 못했습니다.</p>
+    </div>
+</div>
+</body>
+</html>
